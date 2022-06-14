@@ -59,7 +59,8 @@ fun MainScreen(cityName: String, context: Context) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .alpha(0.9f),
+                .alpha(0.9f)
+                .padding(bottom = 5.dp),
             backgroundColor = BlueLight,
             elevation = 0.dp,
             shape = RoundedCornerShape(10.dp)
@@ -133,6 +134,52 @@ fun MainScreen(cityName: String, context: Context) {
                         color = Color.White
                     )
                 }
+            }
+        }
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .alpha(0.9f)
+                .padding(bottom = 5.dp),
+            backgroundColor = BlueLight,
+            elevation = 0.dp,
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                Text(
+                    modifier = Modifier.padding(15.dp),
+                    text = "SomeData",
+                    style = TextStyle(fontSize = 25.sp),
+                    color = Color.White
+                )
+
+            }
+        }
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .alpha(0.9f)
+                .padding(bottom = 5.dp),
+            backgroundColor = BlueLight,
+            elevation = 0.dp,
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                Text(
+                    modifier = Modifier.padding(15.dp),
+                    text = "SomeData",
+                    style = TextStyle(fontSize = 25.sp),
+                    color = Color.White
+                )
+
             }
         }
     }
