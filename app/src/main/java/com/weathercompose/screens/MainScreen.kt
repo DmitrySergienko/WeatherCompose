@@ -39,7 +39,9 @@ fun MainScreen() {
             .padding(5.dp)
     ) {
         Card(
-            modifier = Modifier.fillMaxWidth().alpha(0.7f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .alpha(0.7f),
             backgroundColor = BlueLight,
             elevation = 0.dp,
             shape = RoundedCornerShape(10.dp)
@@ -68,6 +70,7 @@ fun MainScreen() {
 
                 }
             }
+
         }
 
     }
