@@ -7,10 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -20,14 +19,15 @@ import androidx.compose.ui.unit.dp
 import com.weathercompose.R
 import com.weathercompose.ui.screens.ForecastScreen
 import com.weathercompose.ui.screens.MainScreen
-import com.weathercompose.ui.theme.BlueLight
 import com.weathercompose.ui.theme.WeatherComposeTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MyProject(this)
+            WeatherComposeTheme() {
+                MyProject(this)
+            }
         }
     }
 }
@@ -49,8 +49,22 @@ fun MyProject(context: Context) {
                 .padding(top = 4.dp, start = 4.dp, end = 4.dp)
         ) {
             MainScreen("Dubai", context)
-            ForecastScreen("Dubai", context)
+            //ForecastScreen("Any")
+            Scroll()
         }
     }
 }
+
+@Composable
+fun Scroll(names: List<String> = List(100){"Any date"}){
+    LazyColumn {
+        items(names){name ->
+            ForecastScreen(name)
+
+        }
+    }
+
+}
+
+
 

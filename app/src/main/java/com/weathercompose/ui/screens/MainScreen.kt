@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -37,8 +38,8 @@ private const val API_KEY = "886e042c31bc49c3a3f131017220902"
 @Composable
 fun MainScreen(cityName: String, context: Context) {
 
-    val stateTemp = remember { mutableStateOf("Undefined") }
-    val stateDate = remember { mutableStateOf("Undefined") }
+    val stateTemp = rememberSaveable { mutableStateOf("Undefined") }
+    val stateDate = rememberSaveable { mutableStateOf("Undefined") }
 
 
     // getTemperature("London")

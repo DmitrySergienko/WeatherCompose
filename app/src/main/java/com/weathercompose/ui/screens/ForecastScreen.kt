@@ -11,6 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -26,10 +27,10 @@ import com.weathercompose.ui.theme.BlueLight
 
 
 @Composable
-fun ForecastScreen(cityName: String, context: Context) {
+fun ForecastScreen(cityName: String) {
 
-    val stateTemp = remember { mutableStateOf("Unknown") }
-    val stateDate = remember { mutableStateOf("Unknown") }
+    val stateTemp = rememberSaveable { mutableStateOf("Unknown") }
+    val stateDate = rememberSaveable { mutableStateOf("Unknown") }
 
 
     // getTemperature("London")
