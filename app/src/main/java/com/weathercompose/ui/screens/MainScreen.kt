@@ -1,16 +1,15 @@
-package com.weathercompose.screens
+package com.weathercompose.ui.screens
 
 
 import android.content.Context
 import android.util.Log
-import android.widget.EditText
-import androidx.compose.runtime.Composable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +40,7 @@ fun MainScreen(cityName: String, context: Context) {
 
     val stateTemp = remember { mutableStateOf("Unknown") }
     val stateDate = remember { mutableStateOf("Unknown") }
+
 
    // getTemperature("London")
     Image(
