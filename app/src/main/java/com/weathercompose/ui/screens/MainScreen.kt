@@ -12,7 +12,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,10 +39,17 @@ fun MainScreen(cityName: String, context: Context) {
 
     val stateTemp = rememberSaveable { mutableStateOf("Undefined") }
     val stateDate = rememberSaveable { mutableStateOf("Undefined") }
+    val stateWDetails = rememberSaveable() { mutableStateOf("Undefined") }
+    val stateIcon = rememberSaveable() { mutableStateOf("https://cdn.weatherapi.com/weather/64x64/day/113.png") }
 
 
     // getTemperature("London")
     getTemperature(cityName, context, stateTemp)
+    //get weather conditions (sunny, cold...)
+    getWeatherConditions(cityName, context, stateWDetails)
+
+    getIcon(cityName, context, stateWDetails)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -72,13 +78,13 @@ fun MainScreen(cityName: String, context: Context) {
                             .padding(1.dp)
                             .clickable { getConditions(cityName, context, stateDate) },
                         text = "${stateDate.value}",
-                        style = TextStyle(fontSize = 18.sp),
+                        style = TextStyle(fontSize = 22.sp),
                         color = Color.White
                     )
 
 
                     AsyncImage(
-                        model = "https://cdn.weatherapi.com/weather/64x64/day/113.png",
+                        model = "${stateIcon.value}",
                         contentDescription = "imageIcon",
                         modifier = Modifier
                             .size(100.dp)
@@ -103,8 +109,8 @@ fun MainScreen(cityName: String, context: Context) {
                 )
                 Text(
                     modifier = Modifier.padding(1.dp),
-                    text = "Sunny",
-                    style = TextStyle(fontSize = 15.sp),
+                    text = "${stateWDetails.value}",
+                    style = TextStyle(fontSize = 22.sp),
                     color = Color.White
                 )
                 Row(
@@ -175,6 +181,52 @@ fun getConditions(name: String, context: Context, mState: MutableState<String>) 
             val obj = JSONObject(response)
             val temp = obj.getJSONObject("current")
             mState.value = temp.getString("last_updated")
+            //Log.d("MyLog", "Response: ${temp.getString("last_updated")}")
+        },
+        {
+            Log.d("MyLog", "Volley error: $it")
+        }
+    )
+    queue.add(stringRequest)
+}
+
+fun getWeatherConditions(name: String, context: Context, mState: MutableState<String>) {
+    val url = "https://api.weatherapi.com/v1/current.json" +
+            "?key=$API_KEY&" +
+            "q=$name" +
+            "&aqi=no"
+    val queue = Volley.newRequestQueue(context)
+    val stringRequest = StringRequest(
+        Request.Method.GET,
+        url,
+        { response ->
+            val obj = JSONObject(response)
+            val temp = obj.getJSONObject("current")
+            val tempCond = temp.getJSONObject("condition")
+            mState.value = tempCond.getString("text")
+            //Log.d("MyLog", "Response: ${temp.getString("last_updated")}")
+        },
+        {
+            Log.d("MyLog", "Volley error: $it")
+        }
+    )
+    queue.add(stringRequest)
+}
+
+fun getIcon(name: String, context: Context, mState: MutableState<String>) {
+    val url = "https://api.weatherapi.com/v1/current.json" +
+            "?key=$API_KEY&" +
+            "q=$name" +
+            "&aqi=no"
+    val queue = Volley.newRequestQueue(context)
+    val stringRequest = StringRequest(
+        Request.Method.GET,
+        url,
+        { response ->
+            val obj = JSONObject(response)
+            val temp = obj.getJSONObject("current")
+            val tempCond = temp.getJSONObject("condition")
+            mState.value = tempCond.getString("icon")
             //Log.d("MyLog", "Response: ${temp.getString("last_updated")}")
         },
         {

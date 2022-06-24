@@ -22,6 +22,8 @@ import com.weathercompose.ui.screens.MainScreen
 import com.weathercompose.ui.theme.WeatherComposeTheme
 
 class MainActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -29,8 +31,33 @@ class MainActivity : ComponentActivity() {
                 MyProject(this)
             }
         }
+
+
     }
 }
+/*
+private fun permissionListener() {
+    val pLauncher: ActivityResultLauncher<String>
+    pLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        //Toast.makeText(context, "Permission is $it", Toast.LENGTH_SHORT).show()
+    }
+
+}
+
+private fun checkPermission() {
+    if (!isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
+        permissionListener()
+        pLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+}
+
+fun isPermissionGranted(p: String): Boolean {
+    return ContextCompat.checkSelfPermission(ComponentActivity,
+         p) == PackageManager.PERMISSION_GRANTED
+}*/
+
 
 @Composable
 fun MyProject(context: Context) {
@@ -56,9 +83,9 @@ fun MyProject(context: Context) {
 }
 
 @Composable
-fun Scroll(names: List<String> = List(100){"Any date"}){
+fun Scroll(names: List<String> = List(100) { "Any date" }) {
     LazyColumn {
-        items(names){name ->
+        items(names) { name ->
             ForecastScreen(name)
 
         }
