@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">WeatherCompose</string>
+    <string name="iconA">IconA</string>
+    <string name="iconB">IconB</string>
 
 </resources>

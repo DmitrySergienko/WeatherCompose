@@ -47,6 +47,8 @@ fun MainScreen(cityName: String, context: Context) {
     getTemperature(cityName, context, stateTemp)
     //get weather conditions (sunny, cold...)
     getWeatherConditions(cityName, context, stateWDetails)
+    //Date of update
+    getConditions(cityName, context, stateDate)
 
     getIcon(cityName, context, stateWDetails)
 
@@ -102,7 +104,6 @@ fun MainScreen(cityName: String, context: Context) {
                 Text(
                     modifier = Modifier
                         .padding(top = 5.dp),
-
                     text = "${stateTemp.value} C",
                     style = TextStyle(fontSize = 65.sp),
                     color = Color.White
@@ -129,7 +130,7 @@ fun MainScreen(cityName: String, context: Context) {
                         contentDescription = "icon_search",
                         modifier = Modifier
                             .padding(10.dp)
-                            .clickable { getConditions(cityName, context, stateDate) }
+                            .clickable {  }
                     )
                 }
             }
