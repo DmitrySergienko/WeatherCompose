@@ -4,22 +4,33 @@ package com.weathercompose.ui.screens
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -27,6 +38,7 @@ import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.weathercompose.R
+import com.weathercompose.ui.MainActivity
 import com.weathercompose.ui.theme.BlueLight
 import com.weathercompose.ui.theme.WeatherComposeTheme
 import org.json.JSONObject
@@ -35,23 +47,26 @@ private const val API_KEY = "886e042c31bc49c3a3f131017220902"
 
 
 @Composable
-fun MainScreen(cityName: String, context: Context) {
+fun MainScreen(context: Context) {
 
     val stateTemp = rememberSaveable { mutableStateOf("Undefined") }
     val stateDate = rememberSaveable { mutableStateOf("Undefined") }
     val stateWDetails = rememberSaveable() { mutableStateOf("Undefined") }
-    val stateIcon = rememberSaveable() { mutableStateOf("https://cdn.weatherapi.com/weather/64x64/day/113.png") }
+    val stateIcon = rememberSaveable() { mutableStateOf("Undefined") }
+    val inputvalue = remember { mutableStateOf(TextFieldValue()) }
 
 
     // getTemperature("London")
-    getTemperature(cityName, context, stateTemp)
+    getTemperature(inputvalue, context, stateTemp)
     //get weather conditions (sunny, cold...)
-    getWeatherConditions(cityName, context, stateWDetails)
+    getWeatherConditions(inputvalue, context, stateWDetails)
     //Date of update
-    getConditions(cityName, context, stateDate)
+    getConditions(inputvalue, context, stateDate)
+    //Get Icon
+    getIcon(inputvalue, context, stateIcon)
 
-    getIcon(cityName, context, stateWDetails)
-
+    // getWeatherByHour(cityName, context, stateForecast)
+    // val stateForecast = rememberSaveable() { mutableStateOf("No data") }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -78,28 +93,47 @@ fun MainScreen(cityName: String, context: Context) {
                     Text(
                         modifier = Modifier
                             .padding(1.dp)
-                            .clickable { getConditions(cityName, context, stateDate) },
-                        text = "${stateDate.value}",
+                            .clickable { getConditions(inputvalue, context, stateDate) },
+                        text = stateDate.value,
                         style = TextStyle(fontSize = 22.sp),
                         color = Color.White
                     )
 
 
                     AsyncImage(
-                        model = "${stateIcon.value}",
+                        model = "https:${stateIcon.value}",
                         contentDescription = "imageIcon",
                         modifier = Modifier
-                            .size(100.dp)
-                            .padding(top = 2.dp, end = 2.dp)
+                            .size(65.dp)
+                            .padding(top = 14.dp, end = 2.dp)
                     )
-
                 }
-                Text(
-                    modifier = Modifier.padding(15.dp),
-                    text = "$cityName",
-                    style = TextStyle(fontSize = 25.sp),
-                    color = Color.White
+                TextField(
+                    value = inputvalue.value,
+                    onValueChange = { inputvalue.value = it },
+
+                    placeholder = {
+                        Text(
+                            text = "Dubai",
+                            color = Color.White,
+                            textAlign = TextAlign.Center,
+                            style = TextStyle(fontSize = 45.sp),
+                            modifier = Modifier.align(Alignment.CenterHorizontally).clickable {  }) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(15.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .background(color = Color.Transparent),
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters, autoCorrect = true, keyboardType = KeyboardType.Text,),
+                    textStyle = TextStyle(color = Color.White, textAlign = TextAlign.Center)
                 )
+
+                //Text(
+                //    modifier = Modifier.padding(15.dp),
+                //    text = "$cityName",
+                //    style = TextStyle(fontSize = 25.sp),
+                //    color = Color.White
+                //)
 
                 Text(
                     modifier = Modifier
@@ -110,7 +144,7 @@ fun MainScreen(cityName: String, context: Context) {
                 )
                 Text(
                     modifier = Modifier.padding(1.dp),
-                    text = "${stateWDetails.value}",
+                    text = stateWDetails.value,
                     style = TextStyle(fontSize = 22.sp),
                     color = Color.White
                 )
@@ -130,7 +164,7 @@ fun MainScreen(cityName: String, context: Context) {
                         contentDescription = "icon_search",
                         modifier = Modifier
                             .padding(10.dp)
-                            .clickable {  }
+                            .clickable { }
                     )
                 }
             }
@@ -147,10 +181,15 @@ fun MyBackgroundView() {
     }
 }
 
-fun getTemperature(name: String, context: Context, mState: MutableState<String>) {
+fun getTemperature(
+    name: MutableState<TextFieldValue>,
+    context: Context,
+    mState: MutableState<String>
+) {
+    val city = name.toString()
     val url = "https://api.weatherapi.com/v1/current.json" +
             "?key=$API_KEY&" +
-            "q=$name" +
+            "q=$city" +
             "&aqi=no"
     val queue = Volley.newRequestQueue(context)
     val stringRequest = StringRequest(
@@ -161,6 +200,7 @@ fun getTemperature(name: String, context: Context, mState: MutableState<String>)
             val temp = obj.getJSONObject("current")
             mState.value = temp.getString("temp_c")
             Log.d("MyLog", "Response: ${temp.getString("temp_c")}")
+            //Log.d("MyLog", "Response: ${temp}")
         },
         {
             Log.d("MyLog", "Volley error: $it")
@@ -169,10 +209,15 @@ fun getTemperature(name: String, context: Context, mState: MutableState<String>)
     queue.add(stringRequest)
 }
 
-fun getConditions(name: String, context: Context, mState: MutableState<String>) {
+fun getConditions(
+    name: MutableState<TextFieldValue>,
+    context: Context,
+    mState: MutableState<String>
+) {
+    val city = name.toString()
     val url = "https://api.weatherapi.com/v1/current.json" +
             "?key=$API_KEY&" +
-            "q=$name" +
+            "q=$city" +
             "&aqi=no"
     val queue = Volley.newRequestQueue(context)
     val stringRequest = StringRequest(
@@ -191,10 +236,15 @@ fun getConditions(name: String, context: Context, mState: MutableState<String>) 
     queue.add(stringRequest)
 }
 
-fun getWeatherConditions(name: String, context: Context, mState: MutableState<String>) {
+fun getWeatherConditions(
+    name: MutableState<TextFieldValue>,
+    context: Context,
+    mState: MutableState<String>
+) {
+    val city = name.toString()
     val url = "https://api.weatherapi.com/v1/current.json" +
             "?key=$API_KEY&" +
-            "q=$name" +
+            "q=$city" +
             "&aqi=no"
     val queue = Volley.newRequestQueue(context)
     val stringRequest = StringRequest(
@@ -214,10 +264,11 @@ fun getWeatherConditions(name: String, context: Context, mState: MutableState<St
     queue.add(stringRequest)
 }
 
-fun getIcon(name: String, context: Context, mState: MutableState<String>) {
+fun getIcon(name: MutableState<TextFieldValue>, context: Context, mState: MutableState<String>) {
+    val city = name.toString()
     val url = "https://api.weatherapi.com/v1/current.json" +
             "?key=$API_KEY&" +
-            "q=$name" +
+            "q=$city" +
             "&aqi=no"
     val queue = Volley.newRequestQueue(context)
     val stringRequest = StringRequest(
@@ -229,6 +280,38 @@ fun getIcon(name: String, context: Context, mState: MutableState<String>) {
             val tempCond = temp.getJSONObject("condition")
             mState.value = tempCond.getString("icon")
             //Log.d("MyLog", "Response: ${temp.getString("last_updated")}")
+        },
+        {
+            Log.d("MyLog", "Volley error: $it")
+        }
+    )
+    queue.add(stringRequest)
+}
+
+fun getWeatherByHour(name: String, context: Context, mState: MutableState<String>) {
+    val url = "http://api.weatherapi.com/v1/forecast.json" +
+            "?key=$API_KEY&" +
+            "q=$name" +
+            "days=3" +
+            "&aqi=no" +
+            "&alerts=no"
+
+    val queue = Volley.newRequestQueue(context)
+    val stringRequest = StringRequest(
+        Request.Method.GET,
+        url,
+        { response ->
+            val obj = JSONObject(response)
+            val forecast = obj.getJSONObject("forecast")
+            //val forecastDay = forecast.getJSONObject("forecastday")
+            val date = forecast.getJSONObject("date")
+
+            //  val forecastDay = forecast.getJSONArray("forecastday")
+            //  mState.value = forecast.getString("forecastday")
+
+            // Log.d("MyLog", "Forecast: ${forecast}")
+            // Log.v("MyLog", "Forecast: ${date}")
+
         },
         {
             Log.d("MyLog", "Volley error: $it")

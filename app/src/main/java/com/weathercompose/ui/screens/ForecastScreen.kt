@@ -7,8 +7,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -23,12 +21,6 @@ import com.weathercompose.ui.theme.WeatherComposeTheme
 
 @Composable
 fun ForecastScreen(cityName: String) {
-
-    val stateTemp = rememberSaveable { mutableStateOf("Unknown") }
-    val stateDate = rememberSaveable { mutableStateOf("Unknown") }
-
-
-    // getTemperature("London")
 
     Card(
         modifier = Modifier

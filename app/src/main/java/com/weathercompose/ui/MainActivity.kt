@@ -8,19 +8,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.weathercompose.R
 import com.weathercompose.ui.screens.ForecastScreen
 import com.weathercompose.ui.screens.MainScreen
 import com.weathercompose.ui.screens.MyBottomNavigationScreen
-
 import com.weathercompose.ui.theme.WeatherComposeTheme
 
 class MainActivity : ComponentActivity() {
@@ -80,7 +77,7 @@ fun MyProject(context: Context) {
                 .padding(top = 4.dp, start = 4.dp, end = 4.dp)
         ) {
 
-            MainScreen("Dubai", context)
+            MainScreen(context)
             MyBottomNavigationScreen()
             Spacer(modifier = Modifier.height(8.dp))
             Scroll()
@@ -89,7 +86,9 @@ fun MyProject(context: Context) {
     }
 }
 
+
 @Composable
+
 fun Scroll(names: List<String> = List(100) { "Any date" }) {
     LazyColumn(
         contentPadding = PaddingValues(bottom = 30.dp)
