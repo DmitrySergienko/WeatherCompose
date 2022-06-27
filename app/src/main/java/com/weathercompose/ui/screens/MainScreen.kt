@@ -4,33 +4,20 @@ package com.weathercompose.ui.screens
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Card
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -38,7 +25,6 @@ import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.weathercompose.R
-import com.weathercompose.ui.MainActivity
 import com.weathercompose.ui.theme.BlueLight
 import com.weathercompose.ui.theme.WeatherComposeTheme
 import org.json.JSONObject
@@ -53,17 +39,17 @@ fun MainScreen(context: Context) {
     val stateDate = rememberSaveable { mutableStateOf("Undefined") }
     val stateWDetails = rememberSaveable() { mutableStateOf("Undefined") }
     val stateIcon = rememberSaveable() { mutableStateOf("Undefined") }
-    val inputvalue = remember { mutableStateOf(TextFieldValue()) }
 
+    var text by remember { mutableStateOf("Dubai") }
 
     // getTemperature("London")
-    getTemperature(inputvalue, context, stateTemp)
+    getTemperature(text, context, stateTemp)
     //get weather conditions (sunny, cold...)
-    getWeatherConditions(inputvalue, context, stateWDetails)
+    getWeatherConditions(text, context, stateWDetails)
     //Date of update
-    getConditions(inputvalue, context, stateDate)
+    getConditions(text, context, stateDate)
     //Get Icon
-    getIcon(inputvalue, context, stateIcon)
+    getIcon(text, context, stateIcon)
 
     // getWeatherByHour(cityName, context, stateForecast)
     // val stateForecast = rememberSaveable() { mutableStateOf("No data") }
@@ -93,7 +79,7 @@ fun MainScreen(context: Context) {
                     Text(
                         modifier = Modifier
                             .padding(1.dp)
-                            .clickable { getConditions(inputvalue, context, stateDate) },
+                            .clickable { getConditions(text, context, stateDate) },
                         text = stateDate.value,
                         style = TextStyle(fontSize = 22.sp),
                         color = Color.White
@@ -108,7 +94,13 @@ fun MainScreen(context: Context) {
                             .padding(top = 14.dp, end = 2.dp)
                     )
                 }
-                TextField(
+
+
+                BasicTextField(value = text, onValueChange = {newText->
+                    text = newText
+                })
+
+                /*TextField(
                     value = inputvalue.value,
                     onValueChange = { inputvalue.value = it },
 
@@ -126,7 +118,7 @@ fun MainScreen(context: Context) {
                         .background(color = Color.Transparent),
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters, autoCorrect = true, keyboardType = KeyboardType.Text,),
                     textStyle = TextStyle(color = Color.White, textAlign = TextAlign.Center)
-                )
+                )*/
 
                 //Text(
                 //    modifier = Modifier.padding(15.dp),
@@ -173,6 +165,8 @@ fun MainScreen(context: Context) {
 }
 
 
+
+
 @Preview(showBackground = true)
 @Composable
 fun MyBackgroundView() {
@@ -182,7 +176,7 @@ fun MyBackgroundView() {
 }
 
 fun getTemperature(
-    name: MutableState<TextFieldValue>,
+    name: String,
     context: Context,
     mState: MutableState<String>
 ) {
@@ -210,7 +204,7 @@ fun getTemperature(
 }
 
 fun getConditions(
-    name: MutableState<TextFieldValue>,
+    name: String,
     context: Context,
     mState: MutableState<String>
 ) {
@@ -237,7 +231,7 @@ fun getConditions(
 }
 
 fun getWeatherConditions(
-    name: MutableState<TextFieldValue>,
+    name: String,
     context: Context,
     mState: MutableState<String>
 ) {
@@ -264,7 +258,7 @@ fun getWeatherConditions(
     queue.add(stringRequest)
 }
 
-fun getIcon(name: MutableState<TextFieldValue>, context: Context, mState: MutableState<String>) {
+fun getIcon(name: String, context: Context, mState: MutableState<String>) {
     val city = name.toString()
     val url = "https://api.weatherapi.com/v1/current.json" +
             "?key=$API_KEY&" +
