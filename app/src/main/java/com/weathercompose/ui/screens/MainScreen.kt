@@ -40,7 +40,8 @@ fun MainScreen(cityName: String, context: Context) {
     val stateTemp = rememberSaveable { mutableStateOf("Undefined") }
     val stateDate = rememberSaveable { mutableStateOf("Undefined") }
     val stateWDetails = rememberSaveable() { mutableStateOf("Undefined") }
-    val stateIcon = rememberSaveable() { mutableStateOf("https://cdn.weatherapi.com/weather/64x64/day/113.png") }
+    val stateForecast = rememberSaveable() { mutableStateOf("No data") }
+    val stateIcon = rememberSaveable() { mutableStateOf("Undefined") }
 
 
     // getTemperature("London")
@@ -50,7 +51,9 @@ fun MainScreen(cityName: String, context: Context) {
     //Date of update
     getConditions(cityName, context, stateDate)
 
-    getIcon(cityName, context, stateWDetails)
+    getIcon(cityName, context, stateIcon)
+
+   // getWeatherByHour(cityName, context, stateForecast)
 
     Column(
         modifier = Modifier
@@ -86,11 +89,11 @@ fun MainScreen(cityName: String, context: Context) {
 
 
                     AsyncImage(
-                        model = "${stateIcon.value}",
+                        model = "https:${stateIcon.value}",
                         contentDescription = "imageIcon",
                         modifier = Modifier
-                            .size(100.dp)
-                            .padding(top = 2.dp, end = 2.dp)
+                            .size(65.dp)
+                            .padding(top = 14.dp, end = 2.dp)
                     )
 
                 }
@@ -130,7 +133,7 @@ fun MainScreen(cityName: String, context: Context) {
                         contentDescription = "icon_search",
                         modifier = Modifier
                             .padding(10.dp)
-                            .clickable {  }
+                            .clickable { }
                     )
                 }
             }
@@ -160,7 +163,8 @@ fun getTemperature(name: String, context: Context, mState: MutableState<String>)
             val obj = JSONObject(response)
             val temp = obj.getJSONObject("current")
             mState.value = temp.getString("temp_c")
-            Log.d("MyLog", "Response: ${temp.getString("temp_c")}")
+           Log.d("MyLog", "Response: ${temp.getString("temp_c")}")
+           //Log.d("MyLog", "Response: ${temp}")
         },
         {
             Log.d("MyLog", "Volley error: $it")
@@ -229,6 +233,38 @@ fun getIcon(name: String, context: Context, mState: MutableState<String>) {
             val tempCond = temp.getJSONObject("condition")
             mState.value = tempCond.getString("icon")
             //Log.d("MyLog", "Response: ${temp.getString("last_updated")}")
+        },
+        {
+            Log.d("MyLog", "Volley error: $it")
+        }
+    )
+    queue.add(stringRequest)
+}
+
+fun getWeatherByHour(name: String, context: Context, mState: MutableState<String>) {
+    val url = "http://api.weatherapi.com/v1/forecast.json" +
+            "?key=$API_KEY&" +
+            "q=$name" +
+            "days=3" +
+            "&aqi=no" +
+            "&alerts=no"
+
+    val queue = Volley.newRequestQueue(context)
+    val stringRequest = StringRequest(
+        Request.Method.GET,
+        url,
+        { response ->
+            val obj = JSONObject(response)
+            val forecast = obj.getJSONObject("forecast")
+            //val forecastDay = forecast.getJSONObject("forecastday")
+            val date = forecast.getJSONObject("date")
+
+          //  val forecastDay = forecast.getJSONArray("forecastday")
+          //  mState.value = forecast.getString("forecastday")
+
+           // Log.d("MyLog", "Forecast: ${forecast}")
+           // Log.v("MyLog", "Forecast: ${date}")
+
         },
         {
             Log.d("MyLog", "Volley error: $it")
