@@ -26,6 +26,7 @@ import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.weathercompose.R
+import com.weathercompose.ui.getWeatherByHour
 import com.weathercompose.ui.theme.BlueLight
 import com.weathercompose.ui.theme.WeatherComposeTheme
 import org.json.JSONObject
@@ -52,8 +53,8 @@ fun MainScreen(context: Context) {
     //Get Icon
     getIcon(text, context, stateIcon)
 
-    // getWeatherByHour(cityName, context, stateForecast)
-    // val stateForecast = rememberSaveable() { mutableStateOf("No data") }
+
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -297,34 +298,4 @@ fun getIcon(name: String, context: Context, mState: MutableState<String>) {
     queue.add(stringRequest)
 }
 
-fun getWeatherByHour(name: String, context: Context, mState: MutableState<String>) {
-    val url = "http://api.weatherapi.com/v1/forecast.json" +
-            "?key=$API_KEY&" +
-            "q=$name" +
-            "days=3" +
-            "&aqi=no" +
-            "&alerts=no"
 
-    val queue = Volley.newRequestQueue(context)
-    val stringRequest = StringRequest(
-        Request.Method.GET,
-        url,
-        { response ->
-            val obj = JSONObject(response)
-            val forecast = obj.getJSONObject("forecast")
-            //val forecastDay = forecast.getJSONObject("forecastday")
-            val date = forecast.getJSONObject("date")
-
-            //  val forecastDay = forecast.getJSONArray("forecastday")
-            //  mState.value = forecast.getString("forecastday")
-
-            // Log.d("MyLog", "Forecast: ${forecast}")
-            // Log.v("MyLog", "Forecast: ${date}")
-
-        },
-        {
-            Log.d("MyLog", "Volley error: $it")
-        }
-    )
-    queue.add(stringRequest)
-}
